@@ -3,28 +3,76 @@ import TacticBadge from './TacticBadge.astro';
 import TagBadge from './TagBadge.astro';
 
 interface Props {
+  id: string;
   name: string;
   description: string;
   code?: string;
   tactics: string[];
+  techniques: string[];
   tags: string[];
 }
 
-const { name, description, code, tactics, tags } = Astro.props;
+const { id, name, description, code, tactics, techniques, tags } = Astro.props;
 ---
 
-<div class="border border-border rounded-lg p-5 bg-surface-light">
-  <h3 class="text-lg font-semibold text-text-primary mb-2">{name}</h3>
-  <p class="text-text-secondary mb-3">{description}</p>
+<div id={id} class="group/uc py-8 scroll-mt-24">
+  <h3 class="group text-base sm:text-lg font-semibold text-text-primary group-target/uc:text-leaf mb-2 transition-colors">
+    {name}
+    <a
+      href={`#${id}`}
+      class="ml-1 text-text-secondary opacity-0 group-hover:opacity-100 focus:opacity-100 hover:text-leaf transition-opacity"
+      aria-label={`Link to ${name}`}
+      data-pagefind-ignore
+    >#</a>
+  </h3>
+  <p class="text-text-secondary leading-relaxed mb-4 max-w-3xl">{description}</p>
 
   {code && (
-    <div class="mb-3">
-      <pre class="bg-surface rounded-md p-4 overflow-x-auto border border-border"><code class="text-sm text-green-400 font-mono" set:text={code} /></pre>
+    <!-- The button sits beside the scrolling <pre>, not over it, so long lines never run underneath. -->
+    <div class="flex items-start mb-4 bg-surface-light border border-border rounded-lg">
+      <pre class="flex-1 min-w-0 p-4 overflow-x-auto"><code class="text-sm text-text-primary font-mono" set:text={code} /></pre>
+      <button
+        type="button"
+        data-pagefind-ignore
+        class="copy-code shrink-0 m-2 inline-flex items-center gap-1 text-xs px-2 py-1 rounded border border-border bg-surface-lighter text-text-secondary hover:text-text-primary hover:border-text-secondary/60 transition-colors"
+      >
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 8h11a1 1 0 011 1v11a1 1 0 01-1 1H9a1 1 0 01-1-1V8zM16 8V5a1 1 0 00-1-1H5a1 1 0 00-1 1v10a1 1 0 001 1h3" />
+        </svg>
+        <span data-label aria-live="polite">Copy</span>
+      </button>
     </div>
   )}
 
   <div class="flex flex-wrap gap-1.5">
     {tactics.map((t) => <TacticBadge tactic={t} />)}
+    {techniques.map((t) => (
+      <a
+        href={`https://attack.mitre.org/techniques/${t.replace('.', '/')}/`}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={`MITRE ATT&CK ${t}`}
+        class="inline-block text-xs font-mono px-2 py-0.5 rounded border border-border text-text-secondary hover:text-text-primary hover:border-text-secondary/60 transition-colors"
+      >{t}</a>
+    ))}
     {tags.map((t) => <TagBadge tag={t} />)}
   </div>
 </div>
+
+<script>
+  for (const btn of document.querySelectorAll<HTMLButtonElement>('.copy-code')) {
+    const label = btn.querySelector<HTMLElement>('[data-label]')!;
+    let reset: number | undefined;
+    btn.addEventListener('click', async () => {
+      const code = btn.parentElement!.querySelector('code')!.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(code);
+        label.textContent = 'Copied';
+      } catch {
+        label.textContent = 'Copy failed';
+      }
+      clearTimeout(reset);
+      reset = window.setTimeout(() => (label.textContent = 'Copy'), 2000);
+    });
+  }
+</script>

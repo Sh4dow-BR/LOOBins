@@ -12,7 +12,7 @@ LOOBins (Living Off the Orchard: macOS Binaries) is a cybersecurity resource tha
 
 **Important**: This project does NOT include Unix binaries covered by GTFOBins unless they have macOS-specific use cases (e.g., sqlite3).
 
-**Python version**: `^3.8` (tested against 3.8, 3.9, 3.10, 3.11, 3.12 via tox)
+**Python version**: `^3.9` (tested against 3.9, 3.10, 3.11, 3.12 via tox)
 
 ## Development Commands
 
@@ -49,7 +49,7 @@ uv run pyloobins get --name "osascript"
 # Export STIX bundle (--path controls output directory, not input)
 uv run pyloobins export-stix --file-name loobins_stix.json --path .
 
-# Run multi-version tests with tox (Python 3.8–3.12)
+# Run multi-version tests with tox (Python 3.9–3.12)
 uv run tox
 ```
 
@@ -63,7 +63,7 @@ Each LOOBin must follow the schema defined in `/docs/schema.md`:
 - `short_description`: Brief description for card display (used in search results and cards)
 - `full_description`: Detailed description (displays on LOOBin's page)
 - `created`: Date in YYYY-MM-DD format
-- `example_use_cases`: Array of use cases with name, description, optional code, tactics, and tags
+- `example_use_cases`: Array of use cases with name, description, optional code, tactics, techniques (ATT&CK IDs like `T1059.002`), and tags
 - `paths`: Array of binary paths on macOS (e.g., `/usr/bin/osascript`)
 - `detections`: Array of detection sources with name and URL
 
@@ -71,9 +71,9 @@ Each LOOBin must follow the schema defined in `/docs/schema.md`:
 - `resources`: External references (name and URL)
 - `acknowledgements`: Array of acknowledgement strings
 
-**MITRE ATT&CK Tactics** (use exact spelling):
+**MITRE ATT&CK Tactics** (ATT&CK v20; use exact spelling):
 - Reconnaissance, Resource Development, Initial Access, Execution
-- Persistence, Privilege Escalation, Defense Evasion, Credential Access
+- Persistence, Privilege Escalation, Stealth, Defense Impairment, Credential Access
 - Discovery, Lateral Movement, Collection, Exfiltration
 - Command and Control, Impact
 
@@ -83,7 +83,7 @@ Each LOOBin must follow the schema defined in `/docs/schema.md`:
 
 1. **Models** (`src/pyloobins/models.py`):
    - Pydantic v2 models: `LOOBin`, `ExampleUseCase`, `Detection`, `Resource`, `LOOBinsGroup`
-   - Methods: `to_yaml()`, `to_md()`, `to_stix()`, `combine_tactics()`, `combine_tags()`
+   - Methods: `to_yaml()`, `to_md()`, `to_stix()`, `combine_tactics()`, `combine_techniques()`, `combine_tags()`
    - STIX2 integration for exporting threat intelligence data
 
 2. **Utilities** (`src/pyloobins/util.py`):
@@ -104,7 +104,7 @@ Each LOOBin must follow the schema defined in `/docs/schema.md`:
 ### Validation Pipeline
 
 - **CI/CD**: `.github/workflows/validate_loobins.yml` validates changed YAML files on PRs (uses `pip install pyloobins` from PyPI, not local source)
-- **Auto-release**: `.github/workflows/auto-release.yml` on push to `main` — runs tox via uv, bumps patch version, builds with `uv build`, publishes to PyPI with `uv publish`, creates GitHub release, commits version bump with `[skip ci]`
+- **Auto-release**: `.github/workflows/auto-release.yml` nightly (06:00 UTC, or manual `workflow_dispatch` with optional `force`) — skips if nothing in `LOOBins/`, `src/`, or `pyproject.toml` changed since the tag matching the current version; otherwise runs tox via uv, bumps patch version, builds with `uv build`, publishes to PyPI with `uv publish`, creates GitHub release, commits version bump with `[skip ci]`
 - **Pre-commit hooks**: `check-yaml`, `check-toml`, `end-of-file-fixer`, `mixed-line-ending`, `black`, `isort --profile black` (note: pylint is not a pre-commit hook, run it separately)
 - **Schema validation**: Pydantic models ensure YAML files match schema
 - **VS Code integration**: SchemaStore provides YAML validation in VS Code (requires YAML extension)

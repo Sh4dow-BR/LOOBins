@@ -10,6 +10,8 @@ example_use_cases:
     tactics:
       - Discovery
       - Collection
+    techniques:
+      - T1082
     tags:
       - monitoring
       - surveillance
@@ -24,7 +26,7 @@ example_use_cases:
       notifyutil -1 com.example.hidden.channel -g com.example.hidden.channel
     tactics:
       - Command and Control
-      - Defense Evasion
+      - Stealth
     tags:
       - ipc
       - covert-channel
@@ -35,6 +37,8 @@ example_use_cases:
     tactics:
       - Discovery
       - Collection
+    techniques:
+      - T1016
     tags:
       - network
       - monitoring
@@ -45,20 +49,22 @@ example_use_cases:
     tactics:
       - Collection
       - Discovery
+    techniques:
+      - T1614
     tags:
       - geolocation
       - monitoring
-      - reconnaissance
   - name: Monitor login/logout events for privilege escalation timing
     description: By monitoring authentication-related notification keys, an attacker can detect login and logout events to time privilege escalation attempts or other malicious activities when defenses may be weakened during authentication transitions.
     code: notifyutil -w com.apple.loginwindow.logout -w com.apple.springboard.attemptactivationend
     tactics:
       - Discovery
       - Privilege Escalation
+    techniques:
+      - T1033
     tags:
       - authentication
       - monitoring
-      - privilege-escalation
   - name: Query system notification state values for reconnaissance
     description: Threat actors can query state values of system notification keys to gather information about the current system configuration without executing more suspicious commands.
     code: |
@@ -67,8 +73,9 @@ example_use_cases:
       notifyutil -g com.apple.screenIsLocked
     tactics:
       - Discovery
+    techniques:
+      - T1082
     tags:
-      - reconnaissance
       - enumeration
 paths:
   - /usr/bin/notifyutil

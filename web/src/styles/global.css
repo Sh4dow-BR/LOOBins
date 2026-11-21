@@ -4,12 +4,42 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-apple-green: #22c55e;
-  --color-apple-red: #ef4444;
-  --color-surface: #0f172a;
-  --color-surface-light: #1e293b;
-  --color-surface-lighter: #334155;
-  --color-text-primary: #f1f5f9;
-  --color-text-secondary: #94a3b8;
-  --color-border: #334155;
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Leaf is the single accent, reserved for links and interactive state. Pollen marks "new". */
+  --color-leaf: #6fd49b;
+  --color-pollen: #e5c454;
+  --color-surface: #0b0d11;
+  --color-surface-light: #13161c;
+  --color-surface-lighter: #1b1f27;
+  --color-text-primary: #e6e8ec;
+  --color-text-secondary: #959dab;
+  --color-border: #252a34;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-surface);
+    /* Orchard rows: dots in a staggered lattice, like trees planted in offset rows. */
+    background-image:
+      radial-gradient(circle, rgb(130 142 160 / 0.12) 1.25px, transparent 1.75px),
+      radial-gradient(circle, rgb(130 142 160 / 0.12) 1.25px, transparent 1.75px);
+    background-size: 36px 36px;
+    background-position: 0 0, 18px 18px;
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: rgb(111 212 155 / 0.3);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-leaf);
+    outline-offset: 2px;
+  }
 }

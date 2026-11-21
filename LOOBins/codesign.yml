@@ -8,9 +8,11 @@ example_use_cases:
     description: This command forcefully re-signs the MyApp.app application with an ad-hoc signature, applying the signature deeply to all nested code within the app
     code: codesign --force --deep -s - MyApp.app
     tactics:
-      - Defense Evasion
+      - Defense Impairment
+    techniques:
+      - T1553.002
     tags:
-      - codesign
+      - oneliner
 paths:
   - /usr/bin/codesign
 detections:
